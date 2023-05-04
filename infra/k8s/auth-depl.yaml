@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tauth-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tauth
+  template:
+    metadata:
+      labels:
+        app: tauth
+    spec:
+      containers:
+        - name: tauth
+          image: rahulb2568/tauth
+          imagePullPolicy: Never
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tauth-srv
+spec:
+  selector:
+    app: tauth
+  ports:
+    - name: tauth
+      protocol: TCP
+      port: 5001
+      targetPort: 5001
