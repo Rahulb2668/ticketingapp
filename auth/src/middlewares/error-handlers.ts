@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { RequestValidationError } from "../errors/request-validation-error";
-import { DatabaseConnectionError } from "../errors/database-connection-error";
+import { CustomError } from "../errors/custom-errors";
 
 export const errorHandler = (
   err: Error,
@@ -8,16 +7,10 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  if (err instanceof RequestValidationError) {
-    const formattedError = err.errors.map((e) => {
-      return { message: e.msg, field: e.type === "field" && e.path };
-    });
-  }
-
-  if (err instanceof DatabaseConnectionError) {
-    console.log("Handing as dbce");
+  if (err instanceof CustomError) {
+    return res.status(err.statusCode).send({ errors: err.serializeErrors() });
   }
   res.status(400).send({
-    message: "Something went wrong",
+    errors: [{ message: "Something went wrong" }],
   });
 };
